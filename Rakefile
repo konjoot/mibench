@@ -1,4 +1,4 @@
-require 'bench'
+require_relative 'bench'
 
 desc 'pliny benchmark'
 task pliny: ['wrk:pliny', 'boom:pliny']
@@ -8,6 +8,8 @@ task gin: ['wrk:gin', 'boom:gin']
 
 desc 'all'
 task all: [:pliny, :gin]
+
+task default: :all
 
 namespace :wrk do
 

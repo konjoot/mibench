@@ -15,12 +15,16 @@ namespace :wrk do
 
   desc 'wrk benchmark for pliny'
   task :pliny do
-    Bench.for(:pliny).run_by(:wrk)
+    Bench::mark do
+      with(:pliny) { run :wrk }
+    end
   end
 
   desc 'wrk benchmark for gin-gonic'
   task :gin do
-    Bench.for(:gin).run_by(:wrk)
+    Bench::mark do
+      with(:gin) { run :wrk }
+    end
   end
 end
 
@@ -28,11 +32,15 @@ namespace :boom do
 
   desc 'boom benchmark for pliny'
   task :pliny do
-    Bench.for(:pliny).run_by(:boom)
+    Bench::mark do
+      with(:pliny) { run :boom }
+    end
   end
 
   desc 'boom benchmark for gin-gonic'
   task :gin do
-    Bench.for(:gin).run_by(:boom)
+    Bench::mark do
+      with(:gin) { run :boom }
+    end
   end
 end

@@ -1,14 +1,35 @@
-require 'active_support/core_ext/string/inflections'
+require 'sshkit'
 require 'sshkit/dsl'
+require 'active_support/core_ext/string/inflections'
+SSHKit.config.output_verbosity = :debug
 
 module Bench
+  attr_reader :name, :app, :bencher
 
-  def for(name)
-    App.new(name).start
-    return Bencher.new()
+  def mark(&block)
+    self.instance_eval &block
   end
 
-  module_function :for
+  def with(name, &block)
+    puts 'test'
+  end
+
+
+  module_function :mark, :with
+
+  private
+
+  def app
+    @app ||= App.new(name)
+  end
+
+  module_function :app
+
+  def bencher
+    @bencher ||= Bencher.new()
+  end
+
+  module_function :bencher
 
   class App
     attr_reader :app, :name, :f_name
@@ -45,6 +66,7 @@ module Bench
   end
 
   class Pliny
+
     attr_reader :config
 
     NAME = :pliny
@@ -54,10 +76,10 @@ module Bench
     end
 
     def start
-      on :localhost do
-        within '/home/konjoot/projects/mecroservice_experiments/pliny' do
+      run_locally do
+        within '/home/konjoot/projects/microservice_experiments/pliny' do
           with rack_env: :production, daemonize: :true do
-            execute :foreman, :start
+            execute :rvm, '2.2.1@pliny', :do, :foreman, :start
           end
         end
       end
@@ -94,7 +116,7 @@ module Bench
 
     def run_by(bname)
       @bname = bname
-      puts %x{#{cname} #{args}}
+      puts 'its alive'
     end
   end
 end

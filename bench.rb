@@ -3,8 +3,8 @@ require 'sshkit/dsl'
 
 module Bench
 
-  def for (app)
-    App.new(app).start
+  def for(name)
+    App.new(name).start
     return Bencher.new()
   end
 
@@ -13,7 +13,7 @@ module Bench
   class App
     attr_reader :app, :name, :f_name
 
-    APPS = %i{pliny gin}
+    APPS = %i{pliny gin}.freeze
 
     def initialize(name)
       @name = name
@@ -76,6 +76,11 @@ module Bench
   end
 
   class Config
+    attr_reader :name
+
+    def initialize(name)
+      @name = name
+    end
   end
 
   class Gin
@@ -87,7 +92,7 @@ module Bench
     def initialize()
     end
 
-    def run(bname)
+    def run_by(bname)
       @bname = bname
       puts %x{#{cname} #{args}}
     end

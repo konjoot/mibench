@@ -24,6 +24,7 @@ module Bench
 
   class App
     attr_reader :app, :name, :f_name
+
     delegate :stop, :start, to: :app
 
     APPS = %i{pliny gin}.freeze
@@ -31,7 +32,7 @@ module Bench
     def initialize(name)
       @name = name
       @f_name = "Bench::#{name.to_s.camelize}"
-      @app  = build
+      @app = build
     end
 
     def build

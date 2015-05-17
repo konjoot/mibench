@@ -11,11 +11,11 @@ module Bench
   end
 
   def with(name, &block)
-    app  = App.new(name)
+    app  = App.new( name )
 
     app.start && sleep(1)
 
-    p block
+    Bencher.new( &block )
 
     sleep(1) && app.stop
   end
@@ -67,9 +67,9 @@ module Bench
 
     def start
       run_locally do
-        within '~/projects/microservice_experiments/pliny' do
+        within '/home/konjoot/projects/microservice_experiments/pliny' do
           with rack_env: :production, daemonize: :true do
-            execute :bundle, :'exec foreman start'
+            execute :rvm, :'2.2.1@pliny do foreman start'
           end
         end
       end
@@ -79,7 +79,7 @@ module Bench
 
     def stop
       run_locally do
-        within '~/projects/microservice_experiments/pliny' do
+        within '/home/konjoot/projects/microservice_experiments/pliny' do
           with rack_env: :production do
             execute :rvm, :'2.2.1@pliny do pumactl -P .pid stop'
           end
@@ -111,12 +111,15 @@ module Bench
   class Bencher
     attr_reader :bname
 
-    def initialize()
+    def initialize(&block)
+      self.instance_eval &block
     end
 
-    def run_by(bname)
+    def run(bname)
       @bname = bname
-      puts 'its alive'
+      run_locally do
+        execute :wrk, '-c50 -d10s -t4 "http://localhost:5000/posts"'
+      end
     end
   end
 end

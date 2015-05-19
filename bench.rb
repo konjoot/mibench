@@ -67,7 +67,7 @@ module Bench
 
     def start
       run_locally do
-        within '/home/konjoot/projects/microservice_experiments/pliny' do
+        within '~/projects/microservice_experiments/pliny' do
           with rack_env: :production, daemonize: :true do
             execute :rvm, :'2.2.1@pliny do foreman start'
           end
@@ -79,7 +79,7 @@ module Bench
 
     def stop
       run_locally do
-        within '/home/konjoot/projects/microservice_experiments/pliny' do
+        within '~/projects/microservice_experiments/pliny' do
           with rack_env: :production do
             execute :rvm, :'2.2.1@pliny do pumactl -P .pid stop'
           end
@@ -118,7 +118,7 @@ module Bench
     def run(bname)
       @bname = bname
       run_locally do
-        execute :wrk, '-c50 -d10s -t4 "http://localhost:5000/posts"'
+        capture :wrk, '-c50 -d10s -t4 "http://localhost:5000/posts"'
       end
     end
   end

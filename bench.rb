@@ -15,7 +15,7 @@ module Bench
 
     app.start && sleep(1)
 
-    Bencher.new( &block )
+    Runner.new( &block )
 
     sleep(1) && app.stop
   end
@@ -27,7 +27,7 @@ module Bench
 
     delegate :stop, :start, to: :app
 
-    APPS = %i{pliny gin}.freeze
+    APPS = %i{pliny gin wrk boom}.freeze
 
     def initialize(name)
       @name = name
@@ -108,15 +108,23 @@ module Bench
   class Gin
   end
 
-  class Bencher
-    attr_reader :bname
+  class Runner
+    attr_reader :bname, :bencher
 
     def initialize(&block)
       self.instance_eval &block
     end
 
     def run(bname)
-      @bname = bname
+      @bencher = App.new(bname)
+      3.times.map { Thread.new { bencher.start } } .map(&:join)
+    end
+
+  end
+
+  class Wrk
+
+    def start
       run_locally do
         capture :wrk, '-c50 -d10s -t4 "http://localhost:5000/posts"'
       end
